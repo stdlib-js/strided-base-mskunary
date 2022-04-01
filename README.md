@@ -1,0 +1,284 @@
+<!--
+
+@license Apache-2.0
+
+Copyright (c) 2020 The Stdlib Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+# mskunary
+
+[![NPM version][npm-image]][npm-url] [![Build Status][test-image]][test-url] [![Coverage Status][coverage-image]][coverage-url] <!-- [![dependencies][dependencies-image]][dependencies-url] -->
+
+> Apply a unary callback to elements in a strided input array according to elements in a strided mask array and assign results to elements in a strided output array.
+
+<section class="intro">
+
+</section>
+
+<!-- /.intro -->
+
+
+
+<section class="usage">
+
+## Usage
+
+```javascript
+import mskunary from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@esm/index.mjs';
+```
+
+#### mskunary( arrays, shape, strides, fcn )
+
+Applies a unary callback to elements in a strided input array according to elements in a strided mask array and assigns results to elements in a strided output array.
+
+```javascript
+import Float64Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-float64@esm/index.mjs';
+import Uint8Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-uint8@esm/index.mjs';
+import abs from 'https://cdn.jsdelivr.net/gh/stdlib-js/math-base-special-abs@esm/index.mjs';
+
+var x = new Float64Array( [ -2.0, 1.0, 3.0, -5.0, 4.0, 0.0, -1.0, -3.0 ] );
+var mask = new Uint8Array( [ 0, 0, 0, 1, 0, 0, 0, 1 ] );
+
+// Compute the absolute values in-place:
+mskunary( [ x, mask, x ], [ x.length ], [ 1, 1, 1 ], abs );
+// x => <Float64Array>[ 2.0, 1.0, 3.0, -5.0, 4.0, 0.0, 1.0, -3.0 ]
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: array-like object containing one strided input array, a strided mask array, and one strided output array.
+-   **shape**: array-like object containing a single element, the number of indexed elements.
+-   **strides**: array-like object containing the stride lengths for the strided arrays.
+-   **fcn**: unary function to apply.
+
+The `shape` and `strides` parameters determine which elements in the strided arrays are accessed at runtime. For example, to index every other value in the strided input array and to index the first `N` elements of the strided output array in reverse order,
+
+```javascript
+import Float64Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-float64@esm/index.mjs';
+import Uint8Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-uint8@esm/index.mjs';
+import abs from 'https://cdn.jsdelivr.net/gh/stdlib-js/math-base-special-abs@esm/index.mjs';
+
+var x = new Float64Array( [ -1.0, -2.0, -3.0, -4.0, -5.0, -6.0 ] );
+var mask = new Uint8Array( [ 0, 1, 0, 0, 0, 0 ] );
+var y = new Float64Array( [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] );
+
+mskunary( [ x, mask, y ], [ 3 ], [ 2, 1, -1 ], abs );
+// y => <Float64Array>[ 5.0, 0.0, 1.0, 0.0, 0.0, 0.0 ]
+```
+
+Note that indexing is relative to the first index. To introduce an offset, use [`typed array`][mdn-typed-array] views.
+
+```javascript
+import Float64Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-float64@esm/index.mjs';
+import Uint8Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-uint8@esm/index.mjs';
+import abs from 'https://cdn.jsdelivr.net/gh/stdlib-js/math-base-special-abs@esm/index.mjs';
+
+// Initial arrays...
+var x0 = new Float64Array( [ -1.0, -2.0, -3.0, -4.0, -5.0, -6.0 ] );
+var m0 = new Uint8Array( [ 0, 0, 0, 0, 0, 1 ] );
+var y0 = new Float64Array( [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] );
+
+// Create offset views...
+var x1 = new Float64Array( x0.buffer, x0.BYTES_PER_ELEMENT*1 ); // start at 2nd element
+var m1 = new Uint8Array( m0.buffer, m0.BYTES_PER_ELEMENT*3 ); // start at 4th element
+var y1 = new Float64Array( y0.buffer, y0.BYTES_PER_ELEMENT*3 ); // start at 4th element
+
+mskunary( [ x1, m1, y1 ], [ 3 ], [ -2, 1, 1 ], abs );
+// y0 => <Float64Array>[ 0.0, 0.0, 0.0, 6.0, 4.0, 0.0 ]
+```
+
+#### mskunary.ndarray( arrays, shape, strides, offsets, fcn )
+
+Applies a unary callback to elements in a strided input array according to elements in a strided mask array and assigns results to elements in a strided output array using alternative indexing semantics.
+
+```javascript
+import Float64Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-float64@esm/index.mjs';
+import Uint8Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-uint8@esm/index.mjs';
+import abs from 'https://cdn.jsdelivr.net/gh/stdlib-js/math-base-special-abs@esm/index.mjs';
+
+var x = new Float64Array( [ -1.0, -2.0, -3.0, -4.0, -5.0 ] );
+var mask = new Uint8Array( [ 0, 0, 1, 0, 0 ] );
+var y = new Float64Array( [ 0.0, 0.0, 0.0, 0.0, 0.0 ] );
+
+mskunary.ndarray( [ x, mask, y ], [ x.length ], [ 1, 1, 1 ], [ 0, 0, 0 ], abs );
+// y => <Float64Array>[ 1.0, 2.0, 0.0, 4.0, 5.0 ]
+```
+
+The function accepts the following additional arguments:
+
+-   **offsets**: array-like object containing the starting indices (i.e., index offsets) for the strided arrays.
+
+While [`typed array`][mdn-typed-array] views mandate a view offset based on the underlying `buffer`, the `offsets` parameter supports indexing semantics based on starting indices. For example, to index every other value in the strided input array starting from the second value and to index the last `N` elements in the strided output array,
+
+<!-- eslint-disable max-len -->
+
+```javascript
+import Float64Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-float64@esm/index.mjs';
+import Uint8Array from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-uint8@esm/index.mjs';
+import abs from 'https://cdn.jsdelivr.net/gh/stdlib-js/math-base-special-abs@esm/index.mjs';
+
+var x = new Float64Array( [ -1.0, -2.0, -3.0, -4.0, -5.0, -6.0 ] );
+var mask = new Uint8Array( [ 0, 1, 0, 0, 0, 0 ] );
+var y = new Float64Array( [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ] );
+
+mskunary.ndarray( [ x, mask, y ], [ 3 ], [ 2, 1, -1 ], [ 1, 0, y.length-1 ], abs );
+// y => <Float64Array>[ 0.0, 0.0, 0.0, 6.0, 0.0, 2.0 ]
+```
+
+</section>
+
+<!-- /.usage -->
+
+<section class="notes">
+
+</section>
+
+<!-- /.notes -->
+
+<section class="examples">
+
+## Examples
+
+<!-- eslint no-undef: "error" -->
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script type="module">
+
+var discreteUniform = require( 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-discrete-uniform' ).factory;
+var bernoulli = require( 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-bernoulli' ).factory;
+import filledarray from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-filled@esm/index.mjs';
+import filledarrayBy from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-filled-by@esm/index.mjs';
+import mskunary from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@esm/index.mjs';
+
+function add10( x ) {
+    return x + 10;
+}
+
+var N = 10;
+
+var x = filledarrayBy( N, 'generic', discreteUniform( -100, 100 ) );
+console.log( x );
+
+var m = filledarrayBy( N, 'generic', bernoulli( 0.5 ) );
+console.log( m );
+
+var y = filledarray( 0.0, N, 'generic' );
+console.log( y );
+
+var shape = [ N ];
+var strides = [ 1, 1, -1 ];
+var offsets = [ 0, 0, N-1 ];
+
+mskunary.ndarray( [ x, m, y ], shape, strides, offsets, add10 );
+console.log( y );
+
+</script>
+</body>
+</html>
+```
+
+</section>
+
+<!-- /.examples -->
+
+<!-- C interface documentation. -->
+
+
+
+<!-- Section for related `stdlib` packages. Do not manually edit this section, as it is automatically populated. -->
+
+<section class="related">
+
+</section>
+
+<!-- /.related -->
+
+<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+
+<section class="main-repo" >
+
+* * *
+
+## Notice
+
+This package is part of [stdlib][stdlib], a standard library with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
+
+For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
+
+#### Community
+
+[![Chat][chat-image]][chat-url]
+
+---
+
+## License
+
+See [LICENSE][stdlib-license].
+
+
+## Copyright
+
+Copyright &copy; 2016-2022. The Stdlib [Authors][stdlib-authors].
+
+</section>
+
+<!-- /.stdlib -->
+
+<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+<section class="links">
+
+[npm-image]: http://img.shields.io/npm/v/@stdlib/strided-base-mskunary.svg
+[npm-url]: https://npmjs.org/package/@stdlib/strided-base-mskunary
+
+[test-image]: https://github.com/stdlib-js/strided-base-mskunary/actions/workflows/test.yml/badge.svg?branch=main
+[test-url]: https://github.com/stdlib-js/strided-base-mskunary/actions/workflows/test.yml?query=branch:main
+
+[coverage-image]: https://img.shields.io/codecov/c/github/stdlib-js/strided-base-mskunary/main.svg
+[coverage-url]: https://codecov.io/github/stdlib-js/strided-base-mskunary?branch=main
+
+<!--
+
+[dependencies-image]: https://img.shields.io/david/stdlib-js/strided-base-mskunary.svg
+[dependencies-url]: https://david-dm.org/stdlib-js/strided-base-mskunary/main
+
+-->
+
+[chat-image]: https://img.shields.io/gitter/room/stdlib-js/stdlib.svg
+[chat-url]: https://gitter.im/stdlib-js/stdlib/
+
+[stdlib]: https://github.com/stdlib-js/stdlib
+
+[stdlib-authors]: https://github.com/stdlib-js/stdlib/graphs/contributors
+
+[umd]: https://github.com/umdjs/umd
+[es-module]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+
+[deno-url]: https://github.com/stdlib-js/strided-base-mskunary/tree/deno
+[umd-url]: https://github.com/stdlib-js/strided-base-mskunary/tree/umd
+[esm-url]: https://github.com/stdlib-js/strided-base-mskunary/tree/esm
+
+[stdlib-license]: https://raw.githubusercontent.com/stdlib-js/strided-base-mskunary/main/LICENSE
+
+[mdn-typed-array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray
+
+</section>
+
+<!-- /.links -->
