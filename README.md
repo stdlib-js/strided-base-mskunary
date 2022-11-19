@@ -218,19 +218,22 @@ console.log( y );
 
 Character codes for data types:
 
--   **d**: `float64` (double-precision floating-point number).
--   **f**: `float32` (single-precision floating-point number).
+<!-- The following is auto-generated. Do not manually edit. See scripts/loops.js. -->
+
+<!-- charcodes -->
+
 -   **c**: `complex64` (single-precision floating-point complex number).
 -   **z**: `complex128` (double-precision floating-point complex number).
--   **s**: `int8` (signed 8-bit integer).
--   **b**: `uint8` (unsigned 8-bit integer).
+-   **f**: `float32` (single-precision floating-point number).
+-   **d**: `float64` (double-precision floating-point number).
 -   **k**: `int16` (signed 16-bit integer).
--   **t**: `uint16` (unsigned 16-bit integer).
 -   **i**: `int32` (signed 32-bit integer).
+-   **s**: `int8` (signed 8-bit integer).
+-   **t**: `uint16` (unsigned 16-bit integer).
 -   **u**: `uint32` (unsigned 32-bit integer).
--   **l**: `int64` (signed 64-bit integer).
--   **v**: `uint64` (unsigned 64-bit integer).
--   **x**: `bool` (boolean).
+-   **b**: `uint8` (unsigned 8-bit integer).
+
+<!-- ./charcodes -->
 
 Function name suffix naming convention:
 
@@ -256,13 +259,36 @@ is a function which accepts one single-precision floating-point strided input ar
 
 ```c
 // Convert each input array element to double-precision:
-double dxi = (double)fx[ i ];
+double in1 = (double)x[ i ];
 
 // Evaluate the callback:
-double dyi = f( dxi );
+double out = f( in1 );
 
 // Convert the callback return value to single-precision:
-fy[ i ] = (float)dyi;
+y[ i ] = (float)out;
+```
+
+When the strided input array and the callback (i.e., the input argument and return value) share the same data type, the `as` suffix can be omitted. For example,
+
+<!-- run-disable -->
+
+```c
+void stdlib_strided_mask_f_d(...) {...}
+```
+
+is a function which accepts one single-precision floating-point strided input array and one double-precision floating-point strided output array. The callback is assumed to accept and return single-precision floating-point numbers. Accordingly, the input and output values are cast according to the following conversion sequence
+
+<!-- run-disable -->
+
+```c
+// Retrieve each input array element as single-precision:
+float in1 = (float)x[ i ];
+
+// Evaluate the callback:
+float out = f( in1 );
+
+// Convert the callback return value to double-precision:
+y[ i ] = (double)out;
 ```
 
 </section>
@@ -279,36 +305,38 @@ fy[ i ] = (float)dyi;
 #include "stdlib/strided/base/mskunary.h"
 ```
 
-<!-- NOTE: keep the following in alphabetical order -->
+<!-- The following is auto-generated. Do not manually edit. See scripts/loops.js. -->
+
+<!-- loops -->
 
 #### stdlib_strided_mask_b_b( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 8-bit integers to an unsigned 8-bit integer strided input array and assigns results to elements in an unsigned 8-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 1 }; // 1 byte per uint8
+int64_t strides[] = { 1, 1, 1 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint8_t fcn( uint8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_b( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_b( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -316,40 +344,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_b( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_b_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 8-bit integers to an unsigned 8-bit integer strided input array, casts the callback's unsigned 8-bit integer return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 8 }; // 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 1, 1, 1 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint32_t fcn( uint32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_b_as_u_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -357,40 +385,248 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_b_as_u_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint8_t fcn( uint8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_c_as_b_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( uint8_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_c_as_b_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_c_as_b_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_c_as_c_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_c_as_c_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_c_as_c_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_c_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_c_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_c_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint8_t fcn( uint8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_d_as_b_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to an unsigned 8-bit integer strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 8 }; // 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 1, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( uint8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_d_as_b_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -398,7 +634,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_d_as_b_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+double fcn( double x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_d_as_d_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -406,32 +683,32 @@ void stdlib_strided_mask_b_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_b_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 8-bit integers to an unsigned 8-bit integer strided input array, casts the callback's unsigned 8-bit integer return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint8_t fcn( uint8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -439,40 +716,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_f_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_f_as_b_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to an unsigned 8-bit integer strided input array, casts the callback's double-precision floating-point return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+float fcn( uint8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_f_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_f_as_b_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -480,7 +757,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_f_as_b_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_f_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+double fcn( double x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_f_as_d_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -488,32 +806,32 @@ void stdlib_strided_mask_b_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_b_f_as_f_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning single-precision floating-point numbers to an unsigned 8-bit integer strided input array, casts the callback's single-precision floating-point return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-float scale( const float x ) {
-    return x + 10.0f;
+float fcn( float x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_f_as_f_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_f_as_f_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -521,7 +839,7 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_f_as_f_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -529,32 +847,32 @@ void stdlib_strided_mask_b_f_as_f_f( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_b_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to an unsigned 8-bit integer strided input array, casts the callback's unsigned 8-bit integer return value to a signed 32-bit integer, and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint8_t fcn( uint8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -562,40 +880,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_i_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_i_as_b_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to an unsigned 8-bit integer strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t scale( const int32_t x ) {
-    return x + 10;
+int32_t fcn( uint8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_i_as_i_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_i_as_b_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -603,7 +921,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_i_as_b_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_i_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_i_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_i_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -611,32 +970,32 @@ void stdlib_strided_mask_b_i_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_b_k( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 8-bit integers to an unsigned 8-bit integer strided input array, casts the callback's unsigned 8-bit integer return value to a signed 16-bit integer, and assigns results to elements in a signed 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per uint8, 2 bytes per int16
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint8_t fcn( uint8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_k( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_k( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -644,40 +1003,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_k_as_k_k( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_k_as_b_k( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 16-bit integers to an unsigned 8-bit integer strided input array and assigns results to elements in a signed 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per uint8, 2 bytes per int16
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int16_t scale( const int16_t x ) {
-    return x + 10;
+int16_t fcn( uint8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_k_as_k_k( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_k_as_b_k( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -685,7 +1044,89 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int16_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_k_as_b_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_k_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_k_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_k_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_k_as_k_k( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_k_as_k_k( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_k_as_k_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -693,32 +1134,32 @@ void stdlib_strided_mask_b_k_as_k_k( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_b_t( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 8-bit integers to an unsigned 8-bit integer strided input array, casts the callback's unsigned 8-bit integer return value to an unsigned 16-bit integer, and assigns results to elements in an unsigned 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per uint8, 2 bytes per uint16
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint8_t fcn( uint8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_t( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_t( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -726,40 +1167,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_t_as_t_t( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_t_as_b_t( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 16-bit integers to an unsigned 8-bit integer strided input array and assigns results to elements in an unsigned 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per uint8, 2 bytes per uint16
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint16_t scale( const uint16_t x ) {
-    return x + 10;
+uint16_t fcn( uint8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_t_as_t_t( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_t_as_b_t( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -767,40 +1208,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_t_as_b_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_t_as_t_t( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint16_t fcn( uint16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_t_as_t_t( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_t_as_t_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_u( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_t_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 8-bit integers to an unsigned 8-bit integer strided input array, casts the callback's unsigned 8-bit integer return value to an unsigned 32-bit integer, and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint8_t scale( const uint8_t x ) {
-    return x + 10;
+uint32_t fcn( uint32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_u( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_t_as_u_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -808,40 +1290,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_t_as_u_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint8_t fcn( uint8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_u( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_b_u_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_u_as_b_u( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 32-bit integers to an unsigned 8-bit integer strided input array and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint32_t scale( const uint32_t x ) {
-    return x + 10;
+uint32_t fcn( uint8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_b_u_as_u_u( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_u_as_b_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -849,40 +1372,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_u_as_b_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_u_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint32_t fcn( uint32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_u_as_u_u( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_b_u_as_u_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_d_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_b_z( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a double-precision floating-point strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 8, 1, 8 }; // 8 bytes per double, 1 byte per uint8
+int64_t strides[] = { 1, 1, 16 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+uint8_t fcn( uint8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_b_z( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -890,36 +1454,376 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint8_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_z_as_b_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( uint8_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_z_as_b_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(uint8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_z_as_b_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_b_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_b_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_b_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_c_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_c_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_c_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_c_c_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_c_c_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_c_c_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_c_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_c_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_c_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_c_z_as_c_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_c_z_as_c_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_c_z_as_c_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_c_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_c_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_c_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_d_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+double fcn( double x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_d_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_d_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_d_i_as_d_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting a double-precision floating-point number and returning a signed 32-bit integer to a double-precision floating-point strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
-#include <math.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 8, 1, 4 }; // 8 bytes per double, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 8, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
+// Define a callback:
+int32_t fcn( double x ) {
+    // ...
+}
+
 // Apply the callback:
-stdlib_strided_mask_d_i( arrays, shape, strides, (void *)lrint );
+stdlib_strided_mask_d_i_as_d_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -927,36 +1831,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64Int32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
-void stdlib_strided_mask_d_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+void stdlib_strided_mask_d_i_as_d_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_d_l( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_d_z( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting a double-precision floating-point number and returning a signed 64-bit integer to a double-precision floating-point strided input array and assigns results to elements in a signed 64-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
-#include <math.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 8, 1, 8 }; // 8 bytes per double, 1 byte per uint8, 8 bytes per int64
+int64_t strides[] = { 8, 1, 16 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
+// Define a callback:
+double fcn( double x ) {
+    return x;
+}
+
 // Apply the callback:
-stdlib_strided_mask_d_l( arrays, shape, strides, (void *)llrint );
+stdlib_strided_mask_d_z( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -964,40 +1872,124 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64Int64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
-void stdlib_strided_mask_d_l( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+void stdlib_strided_mask_d_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_f_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_d_z_as_d_z( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning single-precision floating-point numbers to a single-precision floating-point strided input array, casts the callback's single-precision floating-point return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( double x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_d_z_as_d_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(double)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_d_z_as_d_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_d_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 8, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_d_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_d_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per float, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-float scale( const float x ) {
-    return x + 10.0f;
+float fcn( float x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_f_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_f_c( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1005,7 +1997,174 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_c_as_c_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_c_as_c_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_c_as_c_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_c_as_f_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( float x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_c_as_f_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(float)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_c_as_f_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_c_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_c_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_c_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+float fcn( float x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_f_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1013,32 +2172,32 @@ void stdlib_strided_mask_f_d( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_f_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a single-precision floating-point strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per float, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_f_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_f_d_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1046,40 +2205,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_f_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_f_f( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_f_d_as_f_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning single-precision floating-point numbers to a single-precision floating-point strided input array and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 4 }; // 4 bytes per float, 1 byte per uint8
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-float scale( const float x ) {
-    return x + 10.0f;
+double fcn( float x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_f_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_f_d_as_f_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1087,7 +2246,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(float)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_d_as_f_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_f( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+float fcn( float x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_f( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_f_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1095,32 +2295,32 @@ void stdlib_strided_mask_f_f( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_f_f_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers, casts the callback's double-precision floating-point return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 4 }; // 4 bytes per float, 1 byte per uint8
+int64_t strides[] = { 4, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_f_f_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_f_f_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1128,114 +2328,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_f_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_f_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_f_i_as_f_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting a single-precision floating-point number and returning a signed 32-bit integer to a single-precision floating-point strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
-#include <math.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 4 }; // 4 bytes per float, 1 byte per uint8, 4 bytes per int32
-
-// Define the number of elements over which to iterate:
-int64_t shape[] = { 3 };
-
-// Apply the callback:
-stdlib_strided_mask_f_i( arrays, shape, strides, (void *)lrintf );
-```
-
-The function accepts the following arguments:
-
--   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
--   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
--   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32Int32` function to apply provided as a `void` pointer.
-
-```c
-void stdlib_strided_mask_f_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
-```
-
-#### stdlib_strided_mask_f_l( \*arrays[], \*shape, \*strides, \*fcn )
-
-Applies a unary callback accepting a single-precision floating-point number and returning a signed 64-bit integer to a single-precision floating-point strided input array and assigns results to elements in a signed 64-bit integer strided output array.
-
-```c
-#include <stdint.h>
-#include <math.h>
-
-// Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-// Define a pointer to an array containing pointers to strided arrays:
-uint8_t *arrays[] = { x, m, out };
-
-// Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per float, 1 byte per uint8, 8 bytes per int64
-
-// Define the number of elements over which to iterate:
-int64_t shape[] = { 3 };
-
-// Apply the callback:
-stdlib_strided_mask_f_l( arrays, shape, strides, (void *)lrintf );
-```
-
-The function accepts the following arguments:
-
--   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
--   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
--   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32Int64` function to apply provided as a `void` pointer.
-
-```c
-void stdlib_strided_mask_f_l( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
-```
-
-#### stdlib_strided_mask_i_d( \*arrays[], \*shape, \*strides, \*fcn )
-
-Applies a unary callback accepting and returning signed 32-bit integers to a signed 32-bit integer strided input array, casts the callback's signed 32-bit integer return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
-
-```c
-#include <stdint.h>
-
-// Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-// Define a pointer to an array containing pointers to strided arrays:
-uint8_t *arrays[] = { x, m, out };
-
-// Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per int32, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 4, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t scale( const int32_t x ) {
-    return x + 10;
+int32_t fcn( float x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_i_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_f_i_as_f_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1243,7 +2369,173 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(float)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_i_as_f_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+float fcn( float x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_z_as_f_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( float x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_z_as_f_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(float)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_z_as_f_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_f_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_f_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_f_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_i_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_i_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_i_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1251,32 +2543,32 @@ void stdlib_strided_mask_i_d( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_i_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a signed 32-bit integer strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per int32, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_i_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_i_d_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1284,40 +2576,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_i_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_i_d_as_i_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to a signed 32-bit integer strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 4 }; // 4 bytes per int32, 1 byte per uint8
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t scale( const int32_t x ) {
-    return x + 10;
+double fcn( int32_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_i_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_i_d_as_i_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1325,7 +2617,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_i_d_as_i_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1333,35 +2666,32 @@ void stdlib_strided_mask_i_i( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_i_u( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to a signed 32-bit integer strided input array, casts the callback's signed 32-bit integer return value to an unsigned 32-bit integer, and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 4 }; // 4 bytes per int32, 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 4, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t abs( const int32_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
+int32_t fcn( int32_t x ) {
     return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_i_u( arrays, shape, strides, (void *)abs );
+stdlib_strided_mask_i_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1369,40 +2699,165 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_i_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_k_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_i_z( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 16-bit integers to a signed 16-bit integer strided input array, casts the callback's signed 16-bit integer return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_i_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_i_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_i_z_as_i_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( int32_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_i_z_as_i_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_i_z_as_i_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_i_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_i_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_i_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 8 }; // 2 bytes per int16, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 2, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int16_t scale( const int16_t x ) {
-    return x + 10;
+int16_t fcn( int16_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_c( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1410,7 +2865,174 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_c_as_c_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_c_as_c_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_c_as_c_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_c_as_k_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( int16_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_c_as_k_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_c_as_k_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_c_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_c_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_c_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1418,32 +3040,32 @@ void stdlib_strided_mask_k_d( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_k_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a signed 16-bit integer strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 8 }; // 2 bytes per int16, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 2, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_d_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1451,40 +3073,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_k_f( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_k_d_as_k_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 16-bit integers to a signed 16-bit integer strided input array, casts the callback's signed 16-bit integer return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per int16, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 2, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int16_t scale( const int16_t x ) {
-    return x + 10;
+double fcn( int16_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_d_as_k_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1492,7 +3114,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_d_as_k_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_f( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_f( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1500,32 +3163,32 @@ void stdlib_strided_mask_k_f( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_k_f_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a signed 16-bit integer strided input array, casts the callback's double-precision floating-point return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per int16, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_f_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_f_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1533,7 +3196,7 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1541,32 +3204,32 @@ void stdlib_strided_mask_k_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_k_f_as_f_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning single-precision floating-point numbers to a signed 16-bit integer strided input array and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per int16, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-float scale( const float x ) {
-    return x + 10.0f;
+float fcn( float x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_f_as_f_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_f_as_f_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1574,40 +3237,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_f_as_f_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_k_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_k_f_as_k_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 16-bit integers to a signed 16-bit integer strided input array, casts the callback's signed 16-bit integer return value to a signed 32-bit integer, and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per int16, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int16_t scale( const int16_t x ) {
-    return x + 10;
+float fcn( int16_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_f_as_k_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1615,7 +3278,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_f_as_k_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1623,32 +3327,32 @@ void stdlib_strided_mask_k_i( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_k_i_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to a signed 16-bit integer strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per int16, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t scale( const int32_t x ) {
-    return x + 10;
+int32_t fcn( int32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_i_as_i_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_k_i_as_i_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1656,128 +3360,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_i_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_k_k( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_k_i_as_k_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 16-bit integers to a signed 16-bit integer strided input array and assigns results to elements in a signed 16-bit integer strided output array.
-
-```c
-#include <stdint.h>
-
-// Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
-
-// Define a pointer to an array containing pointers to strided arrays:
-uint8_t *arrays[] = { x, m, out };
-
-// Define the strides:
-int64_t strides[] = { 2, 1, 2 }; // 2 bytes per int16, 1 byte per uint8
-
-// Define the number of elements over which to iterate:
-int64_t shape[] = { 3 };
-
-// Define a callback:
-int16_t scale( const int16_t x ) {
-    return x + 10;
-}
-
-// Apply the callback:
-stdlib_strided_mask_k_k( arrays, shape, strides, (void *)scale );
-```
-
-The function accepts the following arguments:
-
--   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
--   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
--   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
-
-```c
-void stdlib_strided_mask_k_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
-```
-
-#### stdlib_strided_mask_k_t( \*arrays[], \*shape, \*strides, \*fcn )
-
-Applies a unary callback accepting and returned signed 16-bit integers to a signed 16-bit integer strided input array, casts the callback's signed 16-bit integer return value to an unsigned 16-bit integer, and assigns results to elements in an unsigned 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
-
-// Define a pointer to an array containing pointers to strided arrays:
-uint8_t *arrays[] = { x, m, out };
-
-// Define the strides:
-int64_t strides[] = { 2, 1, 2 }; // 2 bytes per int16, 1 byte per uint8, 2 bytes per uint16
-
-// Define the number of elements over which to iterate:
-int64_t shape[] = { 3 };
-
-// Define a callback:
-int16_t abs( const int16_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
-    return x;
-}
-
-// Apply the callback:
-stdlib_strided_mask_k_t( arrays, shape, strides, (void *)abs );
-```
-
-The function accepts the following arguments:
-
--   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
--   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
--   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
-
-```c
-void stdlib_strided_mask_k_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
-```
-
-#### stdlib_strided_mask_k_u( \*arrays[], \*shape, \*strides, \*fcn )
-
-Applies a unary callback accepting and returning signed 16-bit integers to a signed 16-bit integer strided input array, casts the callback's signed 16-bit integer return value to an unsigned 32-bit integer, and assigns results to elements in an unsigned 32-bit integer strided output array.
-
-```c
-#include <stdint.h>
-
-// Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per int16, 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int16_t abs( const int16_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
-    return x;
+int32_t fcn( int16_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_k_u( arrays, shape, strides, (void *)abs );
+stdlib_strided_mask_k_i_as_k_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1785,84 +3401,245 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_i_as_k_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_k( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_k( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_k_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_k_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_k_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_t( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_t( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_t_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_t_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_t_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_u( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_k_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_l_l( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_k_u_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 64-bit integers to a signed 64-bit integer strided input array and assigns results to elements in a signed 64-bit integer strided output array.
-
-```c
-#include <stdint.h>
-
-// Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-uint8_t m[] = { 0, 1, 0 }; 0, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-// Define a pointer to an array containing pointers to strided arrays:
-uint8_t *arrays[] = { x, m, out };
-
-// Define the strides:
-int64_t strides[] = { 8, 1, 8 }; // 8 bytes per int64, 1 byte per uint8
-
-// Define the number of elements over which to iterate:
-int64_t shape[] = { 3 };
-
-// Define a callback:
-int64_t scale( const int64_t x ) {
-    return x + 10;
-}
-
-// Apply the callback:
-stdlib_strided_mask_l_l( arrays, shape, strides, (void *)scale );
-```
-
-The function accepts the following arguments:
-
--   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
--   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
--   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt64` function to apply provided as a `void` pointer.
-
-```c
-void stdlib_strided_mask_l_l( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
-```
-
-#### stdlib_strided_mask_l_v( \*arrays[], \*shape, \*strides, \*fcn )
-
-Applies a unary callback accepting and returning signed 64-bit integers to a signed 64-bit integer strided input array, casts the callback's signed 64-bit integer return value to an unsigned 64-bit integer, and assigns results to elements in an unsigned 64-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-uint8_t m[] = { 0, 1, 0 }; 0, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 8, 1, 8 }; // 8 bytes per int64, 1 byte per uint8, 8 bytes per uint64
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int64_t abs( const int64_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
+int32_t fcn( int32_t x ) {
     return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_l_v( arrays, shape, strides, (void *)abs );
+stdlib_strided_mask_k_u_as_i_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1870,43 +3647,165 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
-void stdlib_strided_mask_l_v( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+void stdlib_strided_mask_k_u_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_z_as_k_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( int16_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_z_as_k_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_z_as_k_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_k_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_k_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_k_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
 #### stdlib_strided_mask_s_b( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to an unsigned 8-bit integer, and assigns results to elements in an unsigned 8-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 1 }; // 1 byte per int8, 1 byte per uint8, 1 byte per uint8
+int64_t strides[] = { 1, 1, 1 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t abs( const int8_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
+int8_t fcn( int8_t x ) {
     return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_b( arrays, shape, strides, (void *)abs );
+stdlib_strided_mask_s_b( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1914,40 +3813,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_b( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_c( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 8 }; // 1 byte per int8, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 1, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t scale( const int8_t x ) {
-    return x + 10;
+int8_t fcn( int8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_c( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1955,7 +3854,174 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_c_as_c_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_c_as_c_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_c_as_c_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_c_as_s_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( int8_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_c_as_s_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_c_as_s_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_c_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_c_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_c_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int8_t fcn( int8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -1963,32 +4029,32 @@ void stdlib_strided_mask_s_d( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_s_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a signed 8-bit integer strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 8 }; // 1 byte per int8, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 1, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_d_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -1996,40 +4062,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_f( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_d_as_s_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per int8, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 1, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t scale( const int8_t x ) {
-    return x + 10;
+double fcn( int8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_d_as_s_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2037,7 +4103,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_d_as_s_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_f( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int8_t fcn( int8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_f( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2045,32 +4152,32 @@ void stdlib_strided_mask_s_f( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_s_f_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to a signed 8-bit integer strided input array, casts the callback's double-precision floating-point return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per int8, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_f_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_f_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2078,7 +4185,7 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2086,32 +4193,32 @@ void stdlib_strided_mask_s_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_s_f_as_f_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning single-precision floating-point numbers to a signed 8-bit integer strided input array and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per int8, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-float scale( const float x ) {
-    return x + 10.0f;
+float fcn( float x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_f_as_f_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_f_as_f_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2119,40 +4226,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_f_as_f_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_f_as_s_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to a signed 32-bit integer, and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per int8, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t scale( const int8_t x ) {
-    return x + 10;
+float fcn( int8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_f_as_s_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2160,7 +4267,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_f_as_s_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int8_t fcn( int8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2168,32 +4316,32 @@ void stdlib_strided_mask_s_i( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_s_i_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to a signed 8-bit integer strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per int8, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t scale( const int32_t x ) {
-    return x + 10;
+int32_t fcn( int32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_i_as_i_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_i_as_i_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2201,40 +4349,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_i_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_k( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_i_as_s_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to a signed 16-bit integer, and assigns results to elements in a signed 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per int8, 1 byte per uint8, 2 bytes per int16
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t scale( const int8_t x ) {
-    return x + 10;
+int32_t fcn( int8_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_k( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_i_as_s_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2242,40 +4390,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_i_as_s_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_k( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int8_t fcn( int8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_k( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_k_as_k_k( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_k_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 16-bit integers to a signed 8-bit integer strided input array and assigns results to elements in a signed 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per int8, 1 byte per uint8, 2 bytes per int16
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int16_t scale( const int16_t x ) {
-    return x + 10;
+int32_t fcn( int32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_k_as_k_k( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_k_as_i_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2283,40 +4472,122 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
-void stdlib_strided_mask_s_k_as_k_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+void stdlib_strided_mask_s_k_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_s( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_k_as_k_k( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array and assigns results to elements in a signed 8-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_k_as_k_k( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_k_as_k_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_k_as_s_k( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int16_t fcn( int8_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_k_as_s_k( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int16_t (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_k_as_s_k( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_s( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 1 }; // 1 byte per int8, 1 byte per uint8
+int64_t strides[] = { 1, 1, 1 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t scale( const int8_t x ) {
-    return x + 10;
+int8_t fcn( int8_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_s( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_s_s( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2324,43 +4595,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_s( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_t( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_s_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to an unsigned 16-bit integer, and assigns results to elements in an unsigned 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 1 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_s_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_s_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_t( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 2 }; // 1 byte per int8, 1 byte per uint8, 2 bytes per uint16
+int64_t strides[] = { 1, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t abs( const int8_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
+int8_t fcn( int8_t x ) {
     return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_t( arrays, shape, strides, (void *)abs );
+stdlib_strided_mask_s_t( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2368,43 +4677,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_s_u( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_t_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 8-bit integers to a signed 8-bit integer strided input array, casts the callback's signed 8-bit integer return value to an unsigned 32-bit integer, and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 2 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_t_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_t_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 1, 1, 4 }; // 1 byte per int8, 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 1, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int8_t abs( const int8_t x ) {
-    if ( x < 0 ) {
-        return -x;
-    }
+int8_t fcn( int8_t x ) {
     return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_s_u( arrays, shape, strides, (void *)abs );
+stdlib_strided_mask_s_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2412,40 +4759,206 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt8` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_s_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_t_d( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_s_u_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 16-bit integers to an unsigned 16-bit integer strided input array, casts the callback's unsigned 16-bit integer return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( int32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_u_as_i_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_u_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int8_t fcn( int8_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int8_t (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_z_as_s_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( int8_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_z_as_s_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(int8_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_z_as_s_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_s_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 1, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_s_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_s_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 8 }; // 2 bytes per uint16, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 2, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint16_t scale( const uint16_t x ) {
-    return x + 10;
+uint16_t fcn( uint16_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_c( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2453,7 +4966,174 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_c_as_c_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( stdlib_complex64_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_c_as_c_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(stdlib_complex64_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_c_as_c_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_c_as_t_c( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float32.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex64_t fcn( uint16_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_c_as_t_c( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex64_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_c_as_t_c( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_c_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_c_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_c_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_d( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint16_t fcn( uint16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2461,32 +5141,32 @@ void stdlib_strided_mask_t_d( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_t_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to an unsigned 16-bit integer strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 8 }; // 2 bytes per uint16, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 2, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_d_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2494,40 +5174,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_t_f( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_t_d_as_t_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 16-bit integers to an unsigned 16-bit integer strided input array, casts the callback's unsigned 16-bit integer return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 2, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint16_t scale( const uint16_t x ) {
-    return x + 10;
+double fcn( uint16_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_d_as_t_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2535,7 +5215,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_d_as_t_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_f( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint16_t fcn( uint16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_f( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2543,32 +5264,32 @@ void stdlib_strided_mask_t_f( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_t_f_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to an unsigned 16-bit integer strided input array, casts the callback's double-precision floating-point return value to a single-precision floating-point number, and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_f_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_f_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2576,7 +5297,7 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2584,32 +5305,32 @@ void stdlib_strided_mask_t_f_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t 
 
 #### stdlib_strided_mask_t_f_as_f_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning single-precision floating-point numbers to an unsigned 16-bit integer strided input array and assigns results to elements in a single-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per float
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-float scale( const float x ) {
-    return x + 10.0f;
+float fcn( float x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_f_as_f_f( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_f_as_f_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2617,40 +5338,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(float)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_f_as_f_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_t_i( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_t_f_as_t_f( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 16-bit integers to an unsigned 16-bit integer strided input array, casts the callback's unsigned 16-bit integer return value to a signed 32-bit integer, and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint16_t scale( const uint16_t x ) {
-    return x + 10;
+float fcn( uint16_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_f_as_t_f( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2658,7 +5379,48 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `float (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_f_as_t_f( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_i( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint16_t fcn( uint16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2666,32 +5428,32 @@ void stdlib_strided_mask_t_i( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_t_i_as_i_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning signed 32-bit integers to an unsigned 16-bit integer strided input array and assigns results to elements in a signed 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per int32
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-int32_t scale( const int32_t x ) {
-    return x + 10;
+int32_t fcn( int32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_i_as_i_i( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_i_as_i_i( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2699,40 +5461,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnInt32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `int32_t (*f)(int32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_i_as_i_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_t_t( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_t_i_as_t_i( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 16-bit integers to an unsigned 16-bit integer strided input array and assigns results to elements in an unsigned 16-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+int32_t fcn( uint16_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_i_as_t_i( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `int32_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_i_as_t_i( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_t( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 2 }; // 2 bytes per uint16, 1 byte per uint8
+int64_t strides[] = { 2, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint16_t scale( const uint16_t x ) {
-    return x + 10;
+uint16_t fcn( uint16_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_t( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_t( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2740,40 +5543,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_t( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_t_u( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_t_t_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 16-bit integers to each element in an unsigned 16-bit integer strided input array, casts the callback's unsigned 16-bit integer return value to an unsigned 32-bit integer, and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 2, 1, 2 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint16_t scale( const uint16_t x ) {
-    return x + 10;
+uint32_t fcn( uint32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_u( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_t_as_u_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2781,40 +5584,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint16` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_t_as_u_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint16_t fcn( uint16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_u( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_t_u_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_t_u_as_t_u( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 32-bit integers to an unsigned 16-bit integer strided input array and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 2, 1, 4 }; // 2 bytes per uint16, 1 byte per uint8, 4 bytes per uint32
+int64_t strides[] = { 2, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint32_t scale( const uint32_t x ) {
-    return x + 10;
+uint32_t fcn( uint16_t x ) {
+    // ...
 }
 
 // Apply the callback:
-stdlib_strided_mask_t_u_as_u_u( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_t_u_as_t_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2822,40 +5666,206 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_u_as_t_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_u_as_u_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 4 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint32_t fcn( uint32_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_u_as_u_u( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_t_u_as_u_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
+#### stdlib_strided_mask_t_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+uint16_t fcn( uint16_t x ) {
+    return x;
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `uint16_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_z_as_t_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( uint16_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_z_as_t_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(uint16_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_z_as_t_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_t_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 2, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_t_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_t_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
 #### stdlib_strided_mask_u_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 32-bit integers to an unsigned 32-bit integer strided input array, casts the callback's unsigned 32-bit integer return value to a double-precision floating-point number, and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per uint32, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint32_t scale( const uint32_t x ) {
-    return x + 10;
+uint32_t fcn( uint32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_u_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_u_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2863,7 +5873,7 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_u_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
@@ -2871,32 +5881,32 @@ void stdlib_strided_mask_u_d( uint8_t *arrays[], int64_t *shape, int64_t *stride
 
 #### stdlib_strided_mask_u_d_as_d_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning double-precision floating-point numbers to an unsigned 32-bit integer strided input array and assigns results to elements in a double-precision floating-point strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 8 }; // 4 bytes per uint32, 1 byte per uint8, 8 bytes per double
+int64_t strides[] = { 4, 1, 8 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-double scale( const double x ) {
-    return x + 10.0;
+double fcn( double x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_u_d_as_d_d( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_u_d_as_d_d( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2904,40 +5914,81 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnFloat64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `double (*f)(double)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_u_d_as_d_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_u_u( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_u_d_as_u_d( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 32-bit integers to an unsigned 32-bit integer strided input array and assigns results to elements in an unsigned 32-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
 uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 8 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+double fcn( uint32_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_u_d_as_u_d( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `double (*f)(uint32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_u_d_as_u_d( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_u_u( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
 uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 4, 1, 4 }; // 4 bytes per uint32, 1 byte per uint8
+int64_t strides[] = { 4, 1, 4 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint32_t scale( const uint32_t x ) {
-    return x + 10;
+uint32_t fcn( uint32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_u_u( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_u_u( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2945,40 +5996,40 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint32` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
 
 ```c
 void stdlib_strided_mask_u_u( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
 
-#### stdlib_strided_mask_v_v( \*arrays[], \*shape, \*strides, \*fcn )
+#### stdlib_strided_mask_u_z( \*arrays[], \*shape, \*strides, \*fcn )
 
-Applies a unary callback accepting and returning unsigned 64-bit integers to an unsigned 64-bit integer strided input array and assigns results to elements in an unsigned 64-bit integer strided output array.
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
 
 ```c
 #include <stdint.h>
 
 // Create underlying byte arrays:
-uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-uint8_t m[] = { 0, 1, 0 };
-uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Define a pointer to an array containing pointers to strided arrays:
 uint8_t *arrays[] = { x, m, out };
 
 // Define the strides:
-int64_t strides[] = { 8, 1, 8 }; // 8 bytes per uint64, 1 byte per uint8
+int64_t strides[] = { 4, 1, 16 };
 
 // Define the number of elements over which to iterate:
 int64_t shape[] = { 3 };
 
 // Define a callback:
-uint64_t scale( const uint64_t x ) {
-    return x + 10;
+uint32_t fcn( uint32_t x ) {
+    return x;
 }
 
 // Apply the callback:
-stdlib_strided_mask_v_v( arrays, shape, strides, (void *)scale );
+stdlib_strided_mask_u_z( arrays, shape, strides, (void *)fcn );
 ```
 
 The function accepts the following arguments:
@@ -2986,11 +6037,139 @@ The function accepts the following arguments:
 -   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
 -   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
 -   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
--   **fcn**: `[in] void*` a `UnaryFcnUint64` function to apply provided as a `void` pointer.
+-   **fcn**: `[in] void*` a `uint32_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
 
 ```c
-void stdlib_strided_mask_v_v( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+void stdlib_strided_mask_u_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
 ```
+
+#### stdlib_strided_mask_u_z_as_u_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( uint32_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_u_z_as_u_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(uint32_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_u_z_as_u_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_u_z_as_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 4, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_u_z_as_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_u_z_as_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+#### stdlib_strided_mask_z_z( \*arrays[], \*shape, \*strides, \*fcn )
+
+Applies a unary callback to strided input array elements according to a strided mask array and assigns results to elements in a strided output array.
+
+```c
+#include "stdlib/complex/float64.h"
+#include <stdint.h>
+
+// Create underlying byte arrays:
+uint8_t x[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t m[] = { 0, 0, 0 };
+uint8_t out[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// Define a pointer to an array containing pointers to strided arrays:
+uint8_t *arrays[] = { x, m, out };
+
+// Define the strides:
+int64_t strides[] = { 16, 1, 16 };
+
+// Define the number of elements over which to iterate:
+int64_t shape[] = { 3 };
+
+// Define a callback:
+stdlib_complex128_t fcn( stdlib_complex128_t x ) {
+    // ...
+}
+
+// Apply the callback:
+stdlib_strided_mask_z_z( arrays, shape, strides, (void *)fcn );
+```
+
+The function accepts the following arguments:
+
+-   **arrays**: `[inout] uint8_t**` array whose first element is a pointer to a strided input array, whose second element is a pointer to a strided mask array, and whose last element is a pointer to a strided output array.
+-   **shape**: `[in] int64_t*` array whose only element is the number of elements over which to iterate.
+-   **strides**: `[in] int64_t*` array containing strides (in bytes) for each strided array.
+-   **fcn**: `[in] void*` a `stdlib_complex128_t (*f)(stdlib_complex128_t)` function to apply provided as a `void` pointer.
+
+```c
+void stdlib_strided_mask_z_z( uint8_t *arrays[], int64_t *shape, int64_t *strides, void *fcn );
+```
+
+<!-- ./loops -->
 
 <!-- macros -->
 
@@ -3204,6 +6383,8 @@ In addition to the variables defined by the `STDLIB_STRIDED_MSKUNARY_LOOP_PREAMB
         *(tout *)op1 = (tout)f( (fin)x );                             \
     }
 ```
+
+<!-- ./macros -->
 
 </section>
 
