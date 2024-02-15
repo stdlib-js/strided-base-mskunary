@@ -48,13 +48,13 @@ limitations under the License.
 ## Usage
 
 ```javascript
-import mskunary from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@deno/mod.js';
+import mskunary from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@v0.2.0-deno/mod.js';
 ```
 
 You can also import the following named exports from the package:
 
 ```javascript
-import { ndarray } from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@deno/mod.js';
+import { ndarray } from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@v0.2.0-deno/mod.js';
 ```
 
 #### mskunary( arrays, shape, strides, fcn )
@@ -176,7 +176,7 @@ var discreteUniform = require( 'https://cdn.jsdelivr.net/gh/stdlib-js/random-bas
 var bernoulli = require( 'https://cdn.jsdelivr.net/gh/stdlib-js/random-base-bernoulli' ).factory;
 import filledarray from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-filled@deno/mod.js';
 import filledarrayBy from 'https://cdn.jsdelivr.net/gh/stdlib-js/array-filled-by@deno/mod.js';
-import mskunary from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@deno/mod.js';
+import mskunary from 'https://cdn.jsdelivr.net/gh/stdlib-js/strided-base-mskunary@v0.2.0-deno/mod.js';
 
 function add10( x ) {
     return x + 10;
