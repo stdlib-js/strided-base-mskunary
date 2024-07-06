@@ -32,6 +32,7 @@
 
 <details>
 
+-   [`e47b1be`](https://github.com/stdlib-js/stdlib/commit/e47b1be3a80eb9a7ab1fa9f421a133a580ce4366) - **refactor:** reduce code duplication _(by Athan Reines)_
 -   [`dc36936`](https://github.com/stdlib-js/stdlib/commit/dc369364ee617f8f62b40d951a0f0d34f795da6e) - **feat:** add boolean dtype support to `strided/base/mskunary` [(#2520)](https://github.com/stdlib-js/stdlib/pull/2520) _(by Jaysukh Makvana)_
 -   [`cf3f92e`](https://github.com/stdlib-js/stdlib/commit/cf3f92eddd20ec1a4106c8a34f7d7705a9a99dbc) - **fix:** update include paths _(by Athan Reines)_
 -   [`75d4f83`](https://github.com/stdlib-js/stdlib/commit/75d4f83cb85610d23a04dc21a03f8075f6d3665f) - **refactor:** update require and include paths _(by Athan Reines)_
